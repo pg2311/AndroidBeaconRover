@@ -32,4 +32,11 @@ class MainViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun startScanning() {
+        beaconRepository.startScanning()
+    }
+
+    fun stopScanning() {
+        beaconRepository.stopScanning()
+    }
 }
