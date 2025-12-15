@@ -17,13 +17,13 @@
 #define ENB_PIN  6   // Right motor PWM
 
 // PWM settings
-#define PWM_FREQ       1500  // 25kHz - silent operation
+#define PWM_FREQ       5000
 #define PWM_RESOLUTION 8      // 8-bit: 0-255
 
 // Speed settings
-#define MIN_SPEED     100     // Minimum speed that moves motors
+#define MIN_SPEED     190     // Minimum speed that moves motors
 #define MAX_SPEED     250
-#define DEFAULT_SPEED 195
+#define DEFAULT_SPEED 200
 
 // Motor identifiers
 enum Motor {
