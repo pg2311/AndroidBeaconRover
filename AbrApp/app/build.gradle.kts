@@ -35,7 +35,7 @@ android {
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -68,4 +68,7 @@ dependencies {
 
     // hilt for Navigation Compose
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+
+    // alt beacon
+    implementation("org.altbeacon:android-beacon-library:2.19")
 }
