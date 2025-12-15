@@ -9,12 +9,12 @@
 #include <Arduino.h>
 
 // Pin definitions
-#define ENA_PIN  2   // Left motor PWM
-#define IN1_PIN  3   // Left motor direction
-#define IN2_PIN  15  // Left motor direction
-#define IN3_PIN  4   // Right motor direction
-#define IN4_PIN  5   // Right motor direction
-#define ENB_PIN  6   // Right motor PWM
+#define ENA_PIN  6   // Left motor PWM (was ENB)
+#define IN1_PIN  4   // Left motor direction (was IN3)
+#define IN2_PIN  5   // Left motor direction (was IN4)
+#define IN3_PIN  3   // Right motor direction (was IN1)
+#define IN4_PIN  15  // Right motor direction (was IN2)
+#define ENB_PIN  2   // Right motor PWM (was ENA)
 
 // PWM settings
 #define PWM_FREQ       5000

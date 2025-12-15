@@ -15,7 +15,6 @@ bool timeoutEnabled = true;
 // Callback function to update command timestamp
 void onCommandReceived() {
   lastCommandTime = millis();
-  Serial.println("lastCommandTime: " + lastCommandTime);
 }
 
 void setup() {
@@ -23,10 +22,8 @@ void setup() {
   delay(1000);
 
   Serial.println();
-  Serial.println("================================");
-  Serial.println("  ESP32-C6 Car Controller");
-  Serial.println("  (BLE + Serial Control Mode)");
-  Serial.println("================================");
+  Serial.println("[MAIN] ESP32-C6 Car Controller");
+  Serial.println("[MAIN] (BLE + Serial Control Mode)");
   Serial.println();
 
   // Initialize motor control
