@@ -12,6 +12,7 @@ import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.RangeNotifier
 import org.altbeacon.beacon.Region
+import org.altbeacon.beacon.service.ArmaRssiFilter
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,20 +20,21 @@ import javax.inject.Singleton
 @Singleton
 class AltBeaconRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
-): BeaconRepository, RangeNotifier {
+) : BeaconRepository, RangeNotifier {
 
     private val TAG = "AltBeaconRepositoryImpl"
 
     private val beaconManager: BeaconManager =
         BeaconManager.getInstanceForApplication(context)
 
-    private val scanRegion = Region("room",null,null,null)
+    private val scanRegion = Region("room", null, null, null)
 
     private val _isScanning = MutableStateFlow(false)
     override fun isScanning(): StateFlow<Boolean> = _isScanning.asStateFlow()
 
     private val _scanResults = MutableStateFlow<Map<String, BeaconScanResult>>(emptyMap())
-    override fun getScanResults(): StateFlow<Map<String, BeaconScanResult>> = _scanResults.asStateFlow()
+    override fun getScanResults(): StateFlow<Map<String, BeaconScanResult>> =
+        _scanResults.asStateFlow()
 
     private val beaconHistory = ConcurrentHashMap<String, BeaconHistory>()
 
@@ -41,11 +43,12 @@ class AltBeaconRepositoryImpl @Inject constructor(
     }
 
     private fun setupBeaconManager() {
+        ArmaRssiFilter.setDEFAULT_ARMA_SPEED(0.8)
+        BeaconManager.setRssiFilterImplClass(ArmaRssiFilter::class.java)
         beaconManager.beaconParsers.add(
             BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
         )
         beaconManager.addRangeNotifier(this)
-
     }
 
     override fun startScanning() {
@@ -69,7 +72,6 @@ class AltBeaconRepositoryImpl @Inject constructor(
         beaconManager.stopRangingBeacons(scanRegion)
         _isScanning.value = false
     }
-
 
 
     override fun clearHistory() {
@@ -100,23 +102,28 @@ class AltBeaconRepositoryImpl @Inject constructor(
         beacons?.forEach { beacon ->
             if (beacon != null) {
                 val macAddress = beacon.bluetoothAddress.uppercase()
-
                 if (macAddress in configuredMacs) {
-                    val rssi = beacon.rssi
-                    updateBeaconReading(macAddress, rssi)
+                    updateBeaconReading(
+                        macAddress,
+                        beacon.rssi,
+                        beacon.distance
+                    )
                 }
             }
         }
     }
 
-    private fun updateBeaconReading(macAddress: String, rssi: Int) {
-        val  currentTime = System.currentTimeMillis()
-        val history = beaconHistory.getOrPut(macAddress){ BeaconHistory() }
+    private fun updateBeaconReading(macAddress: String, rssi: Int, distance: Double) {
+        val currentTime = System.currentTimeMillis()
+        val history = beaconHistory.getOrPut(macAddress) { BeaconHistory() }
         val interval = if (history.lastTimestamp > 0) {
             currentTime - history.lastTimestamp
-        } else { 0 }
+        } else {
+            0
+        }
 
         history.addRssi(rssi)
+        history.addDistance(distance)
         history.lastTimestamp = currentTime
         if (interval > 0) {
             history.addInterval(interval)
@@ -124,8 +131,9 @@ class AltBeaconRepositoryImpl @Inject constructor(
 
         val scanResult = BeaconScanResult(
             macAddress = macAddress,
-            rssiHistory =  history.getRssiHistory(),
+            rssiHistory = history.getRssiHistory(),
             intervalHistory = history.getIntervalHistory(),
+            distanceHistory = history.getDistanceHistory(),
             lastSeenTimestamp = currentTime
         )
 
@@ -137,6 +145,7 @@ class AltBeaconRepositoryImpl @Inject constructor(
     private class BeaconHistory {
         private val rssiQueue = ArrayDeque<Int>(10)
         private val intervalQueue = ArrayDeque<Long>(10)
+        private val distanceQueue = ArrayDeque<Double>(10)
         var lastTimestamp: Long = 0L
 
         @Synchronized
@@ -156,9 +165,20 @@ class AltBeaconRepositoryImpl @Inject constructor(
         }
 
         @Synchronized
+        fun addDistance(distance: Double) {
+            if (distanceQueue.size >= 10) {
+                distanceQueue.removeFirst()
+            }
+            distanceQueue.addLast(distance)
+        }
+
+        @Synchronized
         fun getRssiHistory(): List<Int> = rssiQueue.toList()
 
         @Synchronized
         fun getIntervalHistory(): List<Long> = intervalQueue.toList()
+
+        @Synchronized
+        fun getDistanceHistory(): List<Double> = distanceQueue.toList()
     }
 }

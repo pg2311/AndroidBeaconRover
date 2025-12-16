@@ -157,6 +157,14 @@ private fun BeaconCard(
                     style = MaterialTheme.typography.labelMedium
                 )
                 Text(
+                    text = scanResult.distanceHistory.joinToString(", ") { "$it m" },
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
                     text = scanResult.rssiHistory.joinToString(", ") { "$it dBm" },
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 8.dp)
