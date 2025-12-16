@@ -1,4 +1,4 @@
-package com.scsa.abr.ui
+package com.scsa.abr.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.scsa.abr.ui.MainViewModel
 
 /**
  * Vehicle control using virtual joystick.

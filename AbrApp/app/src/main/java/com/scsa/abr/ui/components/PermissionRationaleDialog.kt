@@ -1,4 +1,4 @@
-package com.scsa.abr.ui
+package com.scsa.abr.ui.components
 
 import android.content.Intent
 import android.net.Uri

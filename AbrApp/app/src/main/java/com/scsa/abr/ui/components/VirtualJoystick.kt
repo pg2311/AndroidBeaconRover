@@ -1,4 +1,4 @@
-package com.scsa.abr.ui
+package com.scsa.abr.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -132,7 +133,7 @@ fun VirtualJoystick(
                 color = Color.White,
                 radius = radius * 0.3f,
                 center = Offset(centerX + offsetX, centerY + offsetY),
-                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 3f)
+                style = Stroke(width = 3f)
             )
         }
     }

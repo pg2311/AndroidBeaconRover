@@ -3,10 +3,13 @@ package com.scsa.abr.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.scsa.abr.data.AbrProfile
-import com.scsa.abr.domain.BeaconRepository
-import com.scsa.abr.domain.BleGattRepository
-import com.scsa.abr.domain.BlePermissionRepository
+import com.scsa.abr.domain.repository.BeaconRepository
+import com.scsa.abr.domain.repository.BleGattRepository
+import com.scsa.abr.domain.repository.BlePermissionRepository
+import com.scsa.abr.domain.usecase.SendMotorCommandUseCase
+import com.scsa.abr.domain.usecase.StartStatusNotificationUseCase
+import com.scsa.abr.ui.state.BlePermissionState
+import com.scsa.abr.ui.state.MainUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +24,9 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val beaconRepository: BeaconRepository,
     private val blePermissionsRepository: BlePermissionRepository,
-    private val bleGattRepository: BleGattRepository
+    private val bleGattRepository: BleGattRepository,
+    private val startStatusNotificationsUseCase: StartStatusNotificationUseCase,
+    private val sendMotorCommandUseCase: SendMotorCommandUseCase
 ) : ViewModel() {
 
     private val TAG = "MainViewModel"
@@ -34,18 +39,10 @@ class MainViewModel @Inject constructor(
     private val COMMAND_THROTTLE_MS = 50L // Send max 20 commands per second
 
     init {
-        observeRssi()
         observeGattConnection()
         observeReceivedData()
     }
 
-    private fun observeRssi() {
-        beaconRepository.getRssi()
-            .onEach { rssiVal ->
-                _uiState.update { it.copy(rssi = rssiVal) }
-            }
-            .launchIn(viewModelScope)
-    }
 
     private fun observeGattConnection() {
         bleGattRepository.connectionState
@@ -75,22 +72,14 @@ class MainViewModel @Inject constructor(
 
     fun sendMotorCommand(command: String) {
         viewModelScope.launch {
-            val data = command.toByteArray(Charsets.UTF_8)
-            bleGattRepository.writeCharacteristic(
-                AbrProfile.SERVICE_UUID,
-                AbrProfile.CHARACTERISTIC_CONTROL_UUID,
-                data
-            )
+            sendMotorCommandUseCase(command)
                 .onSuccess { Log.i(TAG, "Command sent: $command") }
                 .onFailure { e -> Log.e(TAG, "Failed to send command: $command", e) }
         }
     }
 
     fun startStatusNotifications() {
-        bleGattRepository.startNotifications(
-            AbrProfile.SERVICE_UUID,
-            AbrProfile.CHARACTERISTIC_STATUS_UUID
-        )
+        startStatusNotificationsUseCase()
     }
 
     fun moveForward(speed: Int = 200) {

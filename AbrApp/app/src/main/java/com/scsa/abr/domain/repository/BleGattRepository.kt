@@ -1,5 +1,6 @@
-package com.scsa.abr.domain
+package com.scsa.abr.domain.repository
 
+import com.scsa.abr.domain.model.BleConnectionState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.UUID
@@ -65,12 +66,4 @@ interface BleGattRepository {
         serviceUuid: UUID,
         charUuid: UUID
     ): Result<Unit>
-}
-
-enum class BleConnectionState {
-    DISCONNECTED,   // Not connected
-    CONNECTING,     // Connection in progress
-    CONNECTED,      // Connected and ready
-    DISCONNECTING,  // Disconnection in progress
-    ERROR          // Connection error occurred
 }

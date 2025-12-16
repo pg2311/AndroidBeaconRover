@@ -1,6 +1,6 @@
-package com.scsa.abr.ui
+package com.scsa.abr.ui.state
 
-import com.scsa.abr.domain.BleConnectionState
+import com.scsa.abr.domain.model.BleConnectionState
 
 data class MainUiState(
     val rssi: Double? = null,

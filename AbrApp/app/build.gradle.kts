@@ -72,4 +72,7 @@ dependencies {
 
     // alt beacon
     implementation("org.altbeacon:android-beacon-library:2.19")
+
+    // icons
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 }

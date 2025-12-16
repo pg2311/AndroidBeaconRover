@@ -1,4 +1,4 @@
-package com.scsa.abr.data
+package com.scsa.abr.domain.model
 
 import java.util.UUID
 

@@ -10,8 +10,8 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.util.Log
-import com.scsa.abr.domain.BleConnectionState
-import com.scsa.abr.domain.BleGattRepository
+import com.scsa.abr.domain.model.BleConnectionState
+import com.scsa.abr.domain.repository.BleGattRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
