@@ -14,10 +14,13 @@
  *
  * With parameters (colon-separated):
  *   F:200     - Forward at speed 200
+ *   F:200:100 - Forward at speed 200 for 100ms
  *   B:180     - Backward at speed 180
+ *   B:180:100 - Backward at speed 180 for 100ms
  *   M:200:220 - Manual mode: left speed, right speed (signed: negative = backward)
  *   V:200     - Set default speed to 200
- *   ?         - Query status
+ *   G:100     - Rotate Left for 100ms
+ *   H:100     - Rotate Right for 100ms
  *
  * Joystick mode (for smooth Android control):
  *   J:x:y     - Joystick input where x,y are -100 to 100
@@ -73,10 +76,16 @@ public:
   // Get status string for query response
   String getStatus() const;
 
+  // Check timed moves
+  void update();
+
 private:
   MotorControl* motors;
   uint8_t defaultSpeed;
   Command lastCommand;
+
+  unsigned long moveEndTime;
+  bool timedMoveActive;
 
   // Joystick mixing algorithm
   void processJoystick(int16_t x, int16_t y);

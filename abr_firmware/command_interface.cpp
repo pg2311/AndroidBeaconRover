@@ -6,12 +6,13 @@
 #include "command_interface.h"
 
 CommandInterface::CommandInterface(MotorControl* motors)
-  : motors(motors), defaultSpeed(DEFAULT_SPEED) {
+  : motors(motors), defaultSpeed(DEFAULT_SPEED),
+  moveEndTime(0), timedMoveActive(false) {
   lastCommand = {CMD_NONE, 0, 0, false};
 }
 
 void CommandInterface::begin() {
-  Serial.println("[Command] Interface initialized");
+  Serial.printf("[Command] Interface initialized\n");
 }
 
 int16_t CommandInterface::parseNumber(const String& str, int startIndex, int endIndex) {
@@ -45,7 +46,11 @@ Command CommandInterface::parse(const String& input) {
   switch (cmdChar) {
     case 'F':
       cmd.type = CMD_FORWARD;
-      if (colon1 > 0) {
+      if (colon1 > 0 && colon2 > 0) {
+        cmd.param1 = parseNumber(trimmed, colon1 + 1, colon2);
+        cmd.param2 = parseNumber(trimmed, colon2 + 1, -1);
+        cmd.hasParams = true;
+      } else if (colon1 > 0) {
         cmd.param1 = parseNumber(trimmed, colon1 + 1, -1);
         cmd.hasParams = true;
       }
@@ -53,7 +58,11 @@ Command CommandInterface::parse(const String& input) {
 
     case 'B':
       cmd.type = CMD_BACKWARD;
-      if (colon1 > 0) {
+      if (colon1 > 0 && colon2 > 0) {
+        cmd.param1 = parseNumber(trimmed, colon1 + 1, colon2);
+        cmd.param2 = parseNumber(trimmed, colon2 + 1, -1);
+        cmd.hasParams = true;
+      } else if (colon1 > 0) {
         cmd.param1 = parseNumber(trimmed, colon1 + 1, -1);
         cmd.hasParams = true;
       }
@@ -61,7 +70,11 @@ Command CommandInterface::parse(const String& input) {
 
     case 'L':
       cmd.type = CMD_TURN_LEFT;
-      if (colon1 > 0) {
+      if (colon1 > 0 && colon2 > 0) {
+        cmd.param1 = parseNumber(trimmed, colon1 + 1, colon2);
+        cmd.param2 = parseNumber(trimmed, colon2 + 1, -1);
+        cmd.hasParams = true;
+      } else if (colon1 > 0) {
         cmd.param1 = parseNumber(trimmed, colon1 + 1, -1);
         cmd.hasParams = true;
       }
@@ -69,7 +82,11 @@ Command CommandInterface::parse(const String& input) {
 
     case 'R':
       cmd.type = CMD_TURN_RIGHT;
-      if (colon1 > 0) {
+      if (colon1 > 0 && colon2 > 0) {
+        cmd.param1 = parseNumber(trimmed, colon1 + 1, colon2);
+        cmd.param2 = parseNumber(trimmed, colon2 + 1, -1);
+        cmd.hasParams = true;
+      } else if (colon1 > 0) {
         cmd.param1 = parseNumber(trimmed, colon1 + 1, -1);
         cmd.hasParams = true;
       }
@@ -77,7 +94,11 @@ Command CommandInterface::parse(const String& input) {
 
     case 'G':
       cmd.type = CMD_ROTATE_LEFT;
-      if (colon1 > 0) {
+      if (colon1 > 0 && colon2 > 0) {
+        cmd.param1 = parseNumber(trimmed, colon1 + 1, colon2);
+        cmd.param2 = parseNumber(trimmed, colon2 + 1, -1);
+        cmd.hasParams = true;
+      } else if (colon1 > 0) {
         cmd.param1 = parseNumber(trimmed, colon1 + 1, -1);
         cmd.hasParams = true;
       }
@@ -85,7 +106,11 @@ Command CommandInterface::parse(const String& input) {
 
     case 'H':
       cmd.type = CMD_ROTATE_RIGHT;
-      if (colon1 > 0) {
+      if (colon1 > 0 && colon2 > 0) {
+        cmd.param1 = parseNumber(trimmed, colon1 + 1, colon2);
+        cmd.param2 = parseNumber(trimmed, colon2 + 1, -1);
+        cmd.hasParams = true;
+      } else if (colon1 > 0) {
         cmd.param1 = parseNumber(trimmed, colon1 + 1, -1);
         cmd.hasParams = true;
       }
@@ -125,10 +150,6 @@ Command CommandInterface::parse(const String& input) {
       } else {
         cmd.type = CMD_INVALID;
       }
-      break;
-
-    case '?':
-      cmd.type = CMD_QUERY;
       break;
 
     default:
@@ -192,34 +213,66 @@ void CommandInterface::processJoystick(int16_t x, int16_t y) {
 
 void CommandInterface::execute(const Command& cmd) {
   uint8_t speed = cmd.hasParams ? cmd.param1 : defaultSpeed;
+  bool isTimedCommand = cmd.hasParams && cmd.param2 > 0;
 
   switch (cmd.type) {
     case CMD_FORWARD:
       motors->forward(speed);
+      if (isTimedCommand) {
+        timedMoveActive = true;
+        moveEndTime = millis() + cmd.param2;
+        Serial.printf("[Command] Forward speed=%d for %dms\n", speed, cmd.param2);
+      }
       break;
 
     case CMD_BACKWARD:
       motors->backward(speed);
+      if (isTimedCommand) {
+        timedMoveActive = true;
+        moveEndTime = millis() + cmd.param2;
+        Serial.printf("[Command] Backward speed=%d for %dms\n", speed, cmd.param2);
+      }
       break;
 
     case CMD_TURN_LEFT:
       motors->turnLeft(speed);
+      if (isTimedCommand) {
+        timedMoveActive = true;
+        moveEndTime = millis() + cmd.param2;
+        Serial.printf("[Command] Turn left speed=%d for %dms\n", speed, cmd.param2);
+      }
       break;
 
     case CMD_TURN_RIGHT:
       motors->turnRight(speed);
+      if (isTimedCommand) {
+        timedMoveActive = true;
+        moveEndTime = millis() + cmd.param2;
+        Serial.printf("[Command] Turn right speed=%d for %dms\n", speed, cmd.param2);
+      }
       break;
 
     case CMD_ROTATE_LEFT:
       motors->rotateLeft(speed);
+      if (isTimedCommand) {
+        timedMoveActive = true;
+        moveEndTime = millis() + cmd.param2;
+        Serial.printf("[Command] Rotate left speed=%d for %dms\n", speed, cmd.param2);
+      }
       break;
 
     case CMD_ROTATE_RIGHT:
       motors->rotateRight(speed);
+      if (isTimedCommand) {
+        timedMoveActive = true;
+        moveEndTime = millis() + cmd.param2;
+        Serial.printf("[Command] Rotate right speed=%d for %dms\n", speed, cmd.param2);
+      }
       break;
 
     case CMD_STOP:
       motors->stop();
+      timedMoveActive = false;
       break;
 
     case CMD_MANUAL: {
@@ -227,12 +280,14 @@ void CommandInterface::execute(const Command& cmd) {
       Direction leftDir = (cmd.param1 >= 0) ? DIR_FORWARD : DIR_BACKWARD;
       Direction rightDir = (cmd.param2 >= 0) ? DIR_FORWARD : DIR_BACKWARD;
       motors->setMotors(leftDir, abs(cmd.param1), rightDir, abs(cmd.param2));
+      timedMoveActive = false;
       Serial.printf("[Command] Manual L:%d R:%d\n", cmd.param1, cmd.param2);
       break;
     }
 
     case CMD_JOYSTICK:
       processJoystick(cmd.param1, cmd.param2);
+      timedMoveActive = false;
       break;
 
     case CMD_SET_SPEED:
@@ -240,12 +295,8 @@ void CommandInterface::execute(const Command& cmd) {
       Serial.printf("[Command] Speed set to %d\n", defaultSpeed);
       break;
 
-    case CMD_QUERY:
-      Serial.println(getStatus());
-      break;
-
     case CMD_INVALID:
-      Serial.println("[Command] Invalid command");
+      Serial.printf("[Command] Invalid command\n");
       break;
 
     default:
@@ -253,6 +304,14 @@ void CommandInterface::execute(const Command& cmd) {
   }
 
   lastCommand = cmd;
+}
+
+void CommandInterface::update() {
+  if (timedMoveActive && millis() >= moveEndTime) {
+    motors->stop();
+    timedMoveActive = false;
+    Serial.printf("[Command] Timed move completed\n");
+  }
 }
 
 void CommandInterface::process(const String& input) {

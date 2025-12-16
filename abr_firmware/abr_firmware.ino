@@ -8,7 +8,7 @@ CommandInterface commands(&motors);
 BLEManager bleManager(&commands);
 
 // Safety timeout - stop motors if no command received
-#define COMMAND_TIMEOUT_MS  500
+#define COMMAND_TIMEOUT_MS  10000
 unsigned long lastCommandTime = 0;
 bool timeoutEnabled = true;
 
@@ -48,6 +48,7 @@ void setup() {
 void loop() {
   // Update BLE connection state
   bleManager.update();
+  commands.update();
 
   // Safety timeout - stop if no commands received
   if (timeoutEnabled && motors.isMoving()) {
