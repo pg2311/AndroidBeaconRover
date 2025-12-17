@@ -4,7 +4,7 @@ import com.scsa.abr.domain.model.NavigationDirection
 import com.scsa.abr.domain.model.NavigationMove
 
 class LowVoltageExecutor: NavigationExecutor {
-    override fun executeMove(move: NavigationMove) {
+    override suspend fun executeMove(move: NavigationMove) {
         when (move.direction) {
             NavigationDirection.FORWARD -> moveForward(move.amount)
             NavigationDirection.BACKWARD-> moveBackward(move.amount)
@@ -17,7 +17,7 @@ class LowVoltageExecutor: NavigationExecutor {
         TODO("Not yet implemented")
     }
 
-    override fun gatherData() {
+    override suspend fun gatherData() {
         TODO("Not yet implemented")
     }
 
