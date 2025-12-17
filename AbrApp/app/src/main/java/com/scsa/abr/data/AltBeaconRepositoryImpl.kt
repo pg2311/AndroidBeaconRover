@@ -153,6 +153,5 @@ class AltBeaconRepositoryImpl @Inject constructor(
 
         @Synchronized
         fun getHistory() = historyData.toList()
-
     }
 }
