@@ -46,7 +46,7 @@ class NavigationRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun stopNavigation() {
+    override suspend fun stopNavigation() {
         machine?.stop()
         machine = null
     }

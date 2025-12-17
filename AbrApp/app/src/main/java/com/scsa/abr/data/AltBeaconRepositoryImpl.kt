@@ -92,6 +92,19 @@ class AltBeaconRepositoryImpl @Inject constructor(
         )
     )
 
+    override fun getBeaconHistoryAfter(startTime: Long): List<BeaconScanData> {
+        val currentResults = _scanResults.value.toMutableMap()
+        val ret = mutableListOf<BeaconScanData>()
+
+        currentResults.values.forEach { beaconScanResult ->
+            val temp = beaconScanResult.data.filter { beaconScanData ->
+                beaconScanData.timestamp >= startTime
+            }
+            ret.addAll(temp)
+        }
+
+        return ret;
+    }
 
     override fun didRangeBeaconsInRegion(
         beacons: Collection<org.altbeacon.beacon.Beacon?>?,

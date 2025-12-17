@@ -1,6 +1,7 @@
 package com.scsa.abr.domain.repository
 
 import com.scsa.abr.domain.model.Beacon
+import com.scsa.abr.domain.model.BeaconScanData
 import com.scsa.abr.domain.model.BeaconScanResult
 import kotlinx.coroutines.flow.StateFlow
 
@@ -37,4 +38,9 @@ interface BeaconRepository {
      * Currently returns hardcoded list.
      */
     fun getBeacons(): List<Beacon>
+
+    /**
+     * Returns all BeaconScanData after startTime
+     */
+    fun getBeaconHistoryAfter(startTime: Long): List<BeaconScanData>
 }

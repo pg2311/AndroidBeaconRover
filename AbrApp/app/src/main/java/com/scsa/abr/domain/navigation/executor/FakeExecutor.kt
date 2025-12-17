@@ -2,12 +2,19 @@ package com.scsa.abr.domain.navigation.executor
 
 import com.scsa.abr.domain.model.NavigationDirection
 import com.scsa.abr.domain.model.NavigationMove
+import com.scsa.abr.domain.repository.BeaconRepository
+import com.scsa.abr.domain.repository.BleGattRepository
+import com.scsa.abr.domain.usecase.SendMotorCommandUseCase
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FakeExecutor @Inject constructor(): NavigationExecutor {
+class FakeExecutor @Inject constructor(
+    private val beaconRepository: BeaconRepository,
+    private val bleGattRepository: BleGattRepository
+): NavigationExecutor {
+
     override suspend fun executeMove(move: NavigationMove) {
         when (move.direction) {
             NavigationDirection.FORWARD -> moveForward(move.amount)
@@ -17,26 +24,26 @@ class FakeExecutor @Inject constructor(): NavigationExecutor {
         }
     }
 
-    override fun stop() {
+    override suspend fun stop() {
     }
 
-    override suspend fun gatherData() {
-        delay(2 * 1000)
+    override suspend fun measureDistance(): Double {
+        return 1.0
     }
 
     private suspend fun moveForward(amount: Int) {
-        delay(2 * 1000)
+        delay(1000)
     }
 
     private suspend fun moveBackward(amount: Int) {
-        delay(2 * 1000)
+        delay(1000)
     }
 
     private suspend fun rotateLeft(amount: Int) {
-        delay(4 * 1000)
+        delay(1000)
     }
 
     private suspend fun rotateRight(amount: Int) {
-        delay(44441000)
+        delay(1000)
     }
 }

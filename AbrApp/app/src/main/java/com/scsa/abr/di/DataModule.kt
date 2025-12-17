@@ -48,6 +48,6 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindNavigationExecutor(
-        impl: FakeExecutor
+        impl: LowVoltageExecutor
     ): NavigationExecutor
 }

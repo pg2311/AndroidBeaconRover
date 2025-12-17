@@ -11,5 +11,5 @@ interface NavigationRepository {
     val lastMove: Flow<NavigationMove>
 
     suspend fun startNavigation(navigationAlgorithmType: NavigationAlgorithmType)
-    fun stopNavigation()
+    suspend fun stopNavigation()
 }

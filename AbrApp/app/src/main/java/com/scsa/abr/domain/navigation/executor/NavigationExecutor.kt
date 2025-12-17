@@ -4,6 +4,6 @@ import com.scsa.abr.domain.model.NavigationMove
 
 interface NavigationExecutor {
     suspend fun executeMove(move: NavigationMove)
-    fun stop()
-    suspend fun gatherData()
+    suspend fun stop()
+    suspend fun measureDistance(): Double
 }

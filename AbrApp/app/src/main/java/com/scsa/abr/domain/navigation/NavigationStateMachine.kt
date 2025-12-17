@@ -6,7 +6,6 @@ import com.scsa.abr.domain.model.NavigationMove
 import com.scsa.abr.domain.model.NavigationState
 import com.scsa.abr.domain.navigation.algorithm.NavigationAlgorithm
 import com.scsa.abr.domain.navigation.executor.NavigationExecutor
-import kotlinx.coroutines.delay
 
 class NavigationStateMachine(
     private val algorithm: NavigationAlgorithm,
@@ -24,6 +23,8 @@ class NavigationStateMachine(
 
     private var currentMove: NavigationMove? = null
     private var isRunning = false
+    private var lastRotationDegree = 0
+    private val distanceDeque = ArrayDeque<Double>(2)
 
     suspend fun start() {
         isRunning = true
@@ -38,22 +39,30 @@ class NavigationStateMachine(
                 NavigationState.IDLE -> {}
 
                 NavigationState.GATHERING -> {
-                    executor.gatherData()
+                    getAndSaveDistance()
                     state = NavigationState.CALCULATING
                 }
 
                 NavigationState.CALCULATING -> {
-                    delay(5 * 1000)
-                    if (algorithm.checkArrival()) {
+                    if (algorithm.checkArrival(distanceDeque.last())) {
                         Log.i(TAG, "arrived")
                         onIsArrivedChange(true)
                         stop()
                     } else {
-                        currentMove = algorithm.getNextMove()
+                        currentMove = if (distanceDeque.size < 2) {
+                            algorithm.getInitialMove()
+                        } else {
+                            algorithm.getNextMove(
+                                distanceDeque.first(),
+                                distanceDeque.last(),
+                                lastRotationDegree
+                            )
+                        }
                         onLastMoveChange(currentMove!!)
 
                         if (currentMove?.direction == NavigationDirection.FORWARD
-                            || currentMove?.direction == NavigationDirection.BACKWARD) {
+                            || currentMove?.direction == NavigationDirection.BACKWARD
+                        ) {
                             state = NavigationState.MOVING
                         } else {
                             state = NavigationState.TURNING
@@ -61,12 +70,25 @@ class NavigationStateMachine(
                     }
                 }
 
-                NavigationState.TURNING, NavigationState.MOVING -> {
+                NavigationState.TURNING -> {
                     if (currentMove == null) {
                         Log.e(TAG, "currentMove is null")
                         state = NavigationState.GATHERING
                     } else {
+                        Log.i(TAG, "Turn: $currentMove")
                         executor.executeMove(currentMove!!)
+                        lastRotationDegree = currentMove!!.amount
+                        state = NavigationState.CALCULATING // go to next move
+                    }
+                }
+                NavigationState.MOVING -> {
+                    if (currentMove == null) {
+                        Log.e(TAG, "currentMove is null")
+                        state = NavigationState.GATHERING
+                    } else {
+                        Log.i(TAG, "Move: $currentMove")
+                        executor.executeMove(currentMove!!)
+                        lastRotationDegree = 0
                         state = NavigationState.GATHERING
                     }
                 }
@@ -75,11 +97,17 @@ class NavigationStateMachine(
         state = NavigationState.IDLE
     }
 
-    fun stop() {
+    suspend fun stop() {
         isRunning = false
         executor.stop()
         state = NavigationState.IDLE
     }
 
-    fun getState(): NavigationState = state
+    private suspend fun getAndSaveDistance() {
+        val distance = executor.measureDistance()
+        if (distanceDeque.size >= 2) {
+            distanceDeque.removeFirst()
+        }
+        distanceDeque.addLast(distance)
+    }
 }
