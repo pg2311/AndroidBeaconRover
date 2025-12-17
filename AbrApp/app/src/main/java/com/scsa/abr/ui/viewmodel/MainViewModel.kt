@@ -1,4 +1,4 @@
-package com.scsa.abr.ui
+package com.scsa.abr.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

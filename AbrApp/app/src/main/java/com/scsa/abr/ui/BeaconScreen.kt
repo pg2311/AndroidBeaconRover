@@ -32,6 +32,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.scsa.abr.domain.model.Beacon
 import com.scsa.abr.domain.model.BeaconScanResult
+import com.scsa.abr.ui.viewmodel.BeaconViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

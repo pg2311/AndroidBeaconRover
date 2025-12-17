@@ -1,4 +1,4 @@
-package com.scsa.abr.ui
+package com.scsa.abr.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

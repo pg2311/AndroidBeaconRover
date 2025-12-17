@@ -16,7 +16,11 @@ enum class NavigationAlgorithmType {
 data class NavigationMove (
     val direction: NavigationDirection,
     val amount: Int
-)
+) {
+    override fun toString(): String {
+        return "$direction:$amount"
+    }
+}
 
 enum class NavigationDirection {
     FORWARD,
