@@ -104,7 +104,7 @@ class HighVoltageExecutor @Inject constructor(
     }
 
     private suspend fun moveForward(amount: Int) {
-        val forwardSpeedParam = 190
+        val forwardSpeedParam = 200
         val forwardDistParam = 1000 * amount
         val command = "F:$forwardSpeedParam:$forwardDistParam"
         Log.i(TAG, "moveForward: $command")
@@ -112,7 +112,7 @@ class HighVoltageExecutor @Inject constructor(
     }
 
     private suspend fun moveBackward(amount: Int) {
-        val backwardSpeedParam = 190
+        val backwardSpeedParam = 200
         val backwardDistParam = 1000 * amount
         val command = "B:$backwardSpeedParam:$backwardDistParam"
         Log.i(TAG, "moveBackward: $command")

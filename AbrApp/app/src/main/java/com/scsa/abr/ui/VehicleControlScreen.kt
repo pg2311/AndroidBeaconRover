@@ -30,19 +30,19 @@ import com.scsa.abr.ui.components.VehicleJoystickControl
 import com.scsa.abr.ui.state.BlePermissionState
 import com.scsa.abr.ui.viewmodel.VehicleControlViewModel
 
+private const val TAG = "VehicleControlScreen"
+
 @Composable
 fun VehicleControlScreen(
     viewModel: VehicleControlViewModel,
     modifier: Modifier = Modifier,
     onRequestPermissions: () -> Unit
 ) {
-    val TAG = "MainScreen"
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.checkPermissions()
-        viewModel.connectToAbr("58:8C:81:30:4F:C2")
     }
 
     LaunchedEffect(uiState.permissionState) {
@@ -69,7 +69,7 @@ fun VehicleControlScreen(
 
     var useJoystick by remember { mutableStateOf(true) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -80,16 +80,10 @@ fun VehicleControlScreen(
             // Status information at top
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(16.dp)
             ) {
-                Text(
-                    text = "Android Beacon Rover",
-                    style = MaterialTheme.typography.headlineMedium
-                )
                 Spacer(modifier = Modifier.height(8.dp))
                 when (uiState.permissionState) {
                     BlePermissionState.GRANTED -> {
-                        Text("RSSI: ${uiState.rssi?.let { "%.2f".format(it) } ?: "Scanning..."}")
                         Text(
                             text = "Connection: ${uiState.gattConnectionState}",
                             style = MaterialTheme.typography.bodyMedium,
@@ -113,18 +107,36 @@ fun VehicleControlScreen(
                     VehicleJoystickControl(viewModel)
                 }
             } else {
-                Text(
-                    text = "Waiting for connection...",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    if (uiState.permissionState == BlePermissionState.GRANTED) {
+                        Button(
+                            onClick = { viewModel.connectToAbr() },
+                            enabled = uiState.gattConnectionState != BleConnectionState.CONNECTING
+                        ) {
+                            Text(
+                                text = when (uiState.gattConnectionState) {
+                                    BleConnectionState.CONNECTING -> "Connecting..."
+                                    else -> "Connect to Vehicle"
+                                }
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = "Bluetooth permissions required",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
 
             // Control mode toggle at bottom
             if (uiState.gattConnectionState == BleConnectionState.CONNECTED) {
                 Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.padding(16.dp)
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     Button(onClick = { useJoystick = !useJoystick }) {
                         Text(if (useJoystick) "Switch to Buttons" else "Switch to Joystick")

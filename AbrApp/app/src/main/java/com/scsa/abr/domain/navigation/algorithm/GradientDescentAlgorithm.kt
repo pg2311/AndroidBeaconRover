@@ -5,13 +5,13 @@ import com.scsa.abr.domain.model.NavigationDirection
 import com.scsa.abr.domain.model.NavigationMove
 
 private const val TAG = "GradientDescentAlgorithm"
-private const val THRESHOLD = 0.9
+private const val THRESHOLD = 0.7
 
 class GradientDescentAlgorithm : NavigationAlgorithm {
 
 
     override fun getInitialMove(): NavigationMove {
-        return NavigationMove(NavigationDirection.FORWARD, 2)
+        return NavigationMove(NavigationDirection.FORWARD, 3)
     }
 
     override fun getNextMove(
@@ -21,12 +21,12 @@ class GradientDescentAlgorithm : NavigationAlgorithm {
     ): NavigationMove {
         Log.i(TAG, "$oldDistance -> $curDistance")
         if (oldDistance > curDistance) {
-            return NavigationMove(NavigationDirection.FORWARD, 2)
+            return NavigationMove(NavigationDirection.FORWARD, 3)
         } else {
             if (lastRotationDegree == 0) {
                 return NavigationMove(NavigationDirection.RIGHT, 90)
             } else {
-                return NavigationMove(NavigationDirection.FORWARD, 2)
+                return NavigationMove(NavigationDirection.FORWARD, 3)
             }
         }
     }

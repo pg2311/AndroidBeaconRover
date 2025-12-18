@@ -80,20 +80,19 @@ fun BeaconScreen(
                     text = error,
                     color = MaterialTheme.colorScheme.onErrorContainer,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp)
                 )
             }
         }
-    }
 
-    if (uiState.configuredBeacons.isEmpty()) {
-        EmptyState(modifier = Modifier.fillMaxSize())
-    } else {
-        BeaconList(
-            beacons = uiState.configuredBeacons,
-            scanResults = uiState.scanResults,
-            modifier = Modifier.fillMaxSize()
-        )
+        if (uiState.configuredBeacons.isEmpty()) {
+            EmptyState(modifier = Modifier.fillMaxSize())
+        } else {
+            BeaconList(
+                beacons = uiState.configuredBeacons,
+                scanResults = uiState.scanResults,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 
 }
@@ -171,7 +170,6 @@ private fun BeaconCard(
                         .subList(startIndex, dataSize)
                         .joinToString("\n") { "$it" },
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 8.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -201,9 +199,4 @@ private fun EmptyState(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
-}
-
-private fun formatTimestamp(timestamp: Long): String {
-    return SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(timestamp))
-
 }

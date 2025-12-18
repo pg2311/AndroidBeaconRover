@@ -1,6 +1,7 @@
 package com.scsa.abr.ui
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -23,9 +24,11 @@ fun MainScreen(
     var selectedTab by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        modifier = Modifier.padding(32.dp),
         topBar = {
-            TabRow(selectedTabIndex = selectedTab) {
+            TabRow(
+                selectedTabIndex = selectedTab,
+                modifier = Modifier.statusBarsPadding()
+            ) {
                 Tab(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },

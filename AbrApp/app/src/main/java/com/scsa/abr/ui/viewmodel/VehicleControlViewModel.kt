@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.scsa.abr.domain.repository.BeaconRepository
 import com.scsa.abr.domain.repository.BleGattRepository
 import com.scsa.abr.domain.repository.BlePermissionRepository
+import com.scsa.abr.domain.usecase.ConnectToAbrUseCase
 import com.scsa.abr.domain.usecase.SendMotorCommandUseCase
 import com.scsa.abr.domain.usecase.StartStatusNotificationUseCase
 import com.scsa.abr.ui.state.BlePermissionState
@@ -28,6 +29,7 @@ class VehicleControlViewModel @Inject constructor(
     private val beaconRepository: BeaconRepository,
     private val blePermissionsRepository: BlePermissionRepository,
     private val bleGattRepository: BleGattRepository,
+    private val connectToAbrUseCase: ConnectToAbrUseCase,
     private val startStatusNotificationsUseCase: StartStatusNotificationUseCase,
     private val sendMotorCommandUseCase: SendMotorCommandUseCase
 ) : ViewModel() {
@@ -62,9 +64,9 @@ class VehicleControlViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun connectToAbr(deviceAddress: String) {
+    fun connectToAbr() {
         viewModelScope.launch {
-            bleGattRepository.connect(deviceAddress)
+            connectToAbrUseCase()
                 .onSuccess { Log.i(TAG, "Connected to ABR") }
                 .onFailure { e -> Log.e(TAG, "Connection failed", e) }
         }
