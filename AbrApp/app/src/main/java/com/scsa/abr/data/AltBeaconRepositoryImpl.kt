@@ -1,11 +1,10 @@
 package com.scsa.abr.data
 
 import android.content.Context
-import android.util.Log
-import com.scsa.abr.domain.repository.BeaconRepository
 import com.scsa.abr.domain.model.Beacon
 import com.scsa.abr.domain.model.BeaconScanData
 import com.scsa.abr.domain.model.BeaconScanResult
+import com.scsa.abr.domain.repository.BeaconRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,8 +22,6 @@ import javax.inject.Singleton
 class AltBeaconRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : BeaconRepository, RangeNotifier {
-
-    private val TAG = "AltBeaconRepositoryImpl"
 
     private val beaconManager: BeaconManager =
         BeaconManager.getInstanceForApplication(context)

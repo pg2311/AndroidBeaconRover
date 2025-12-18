@@ -86,7 +86,8 @@ fun VirtualJoystick(
                         } else {
                             // Normalize to -1.0 to 1.0
                             val normalizedX = offsetX / maxOffset
-                            val normalizedY = -offsetY / maxOffset // Invert Y (screen Y increases downward)
+                            val normalizedY =
+                                -offsetY / maxOffset // Invert Y (screen Y increases downward)
 
                             onMove(normalizedX, normalizedY)
                         }

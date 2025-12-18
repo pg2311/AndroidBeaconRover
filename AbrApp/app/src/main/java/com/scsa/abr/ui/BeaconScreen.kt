@@ -165,7 +165,7 @@ private fun BeaconCard(
                     text = "RSSI History:",
                     style = MaterialTheme.typography.labelMedium
                 )
-                Text(text= "${scanResult.data.size}")
+                Text(text = "${scanResult.data.size}")
                 Text(
                     text = scanResult.data
                         .subList(startIndex, dataSize)

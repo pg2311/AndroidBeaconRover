@@ -4,7 +4,7 @@ import com.scsa.abr.domain.model.AbrProfile
 import com.scsa.abr.domain.repository.BleGattRepository
 import javax.inject.Inject
 
-class SendMotorCommandUseCase @Inject constructor (
+class SendMotorCommandUseCase @Inject constructor(
     private val bleGattRepository: BleGattRepository
 ) {
     suspend operator fun invoke(command: String): Result<Unit> {

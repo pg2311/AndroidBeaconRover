@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class BlePermissionRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
-): BlePermissionRepository {
+) : BlePermissionRepository {
     /**
      * Returns the list of BLE permissions required for the current Android version.
      */
@@ -40,7 +40,10 @@ class BlePermissionRepositoryImpl @Inject constructor(
         if (requiredPermissions.isEmpty()) return true
 
         return requiredPermissions.all { permission ->
-            ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
         }
     }
 }

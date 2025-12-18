@@ -15,13 +15,14 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
+private const val TAG = "HighVoltageExecutor"
+
 @Singleton
 class HighVoltageExecutor @Inject constructor(
     private val beaconRepository: BeaconRepository,
     private val bleGattRepository: BleGattRepository
 ) : NavigationExecutor {
 
-    private val TAG = "HighVoltageExecutor"
 
     override suspend fun executeMove(move: NavigationMove) {
         when (move.direction) {
@@ -105,15 +106,15 @@ class HighVoltageExecutor @Inject constructor(
     private suspend fun moveForward(amount: Int) {
         val forwardSpeedParam = 190
         val forwardDistParam = 1000 * amount
-        val command ="F:$forwardSpeedParam:$forwardDistParam"
+        val command = "F:$forwardSpeedParam:$forwardDistParam"
         Log.i(TAG, "moveForward: $command")
         sendMotorCommand(command)
     }
 
     private suspend fun moveBackward(amount: Int) {
         val backwardSpeedParam = 190
-        val backwardDistParam =	1000 * amount
-        val command ="B:$backwardSpeedParam:$backwardDistParam"
+        val backwardDistParam = 1000 * amount
+        val command = "B:$backwardSpeedParam:$backwardDistParam"
         Log.i(TAG, "moveBackward: $command")
         sendMotorCommand(command)
     }

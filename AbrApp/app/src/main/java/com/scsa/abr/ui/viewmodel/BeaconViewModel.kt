@@ -21,7 +21,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class BeaconViewModel @Inject constructor(
     private val beaconRepository: BeaconRepository,
     private val permissionRepository: BlePermissionRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BeaconUiState())
     val uiState: StateFlow<BeaconUiState> = _uiState.asStateFlow()

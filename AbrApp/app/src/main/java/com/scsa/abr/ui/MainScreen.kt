@@ -28,18 +28,18 @@ fun MainScreen(
             TabRow(selectedTabIndex = selectedTab) {
                 Tab(
                     selected = selectedTab == 0,
-                    onClick = {selectedTab = 0},
-                    text = {Text("Control")}
+                    onClick = { selectedTab = 0 },
+                    text = { Text("Control") }
                 )
                 Tab(
                     selected = selectedTab == 1,
-                    onClick = {selectedTab = 1},
-                    text = {Text("Beacons")}
+                    onClick = { selectedTab = 1 },
+                    text = { Text("Beacons") }
                 )
                 Tab(
                     selected = selectedTab == 2,
-                    onClick = {selectedTab = 2},
-                    text = {Text("Navigation")}
+                    onClick = { selectedTab = 2 },
+                    text = { Text("Navigation") }
                 )
             }
         }
@@ -50,9 +50,11 @@ fun MainScreen(
                 modifier = Modifier.padding(padding),
                 onRequestPermissions = onRequestPermissions
             )
+
             1 -> BeaconScreen(
                 modifier = Modifier.padding(padding)
             )
+
             2 -> NavigationMonitorScreen(
                 modifier = Modifier.padding(padding)
             )

@@ -2,7 +2,7 @@ package com.scsa.abr.domain.navigation.algorithm
 
 import com.scsa.abr.domain.model.NavigationMove
 
-class IterativeHeadingCorrectionAlgorithm: NavigationAlgorithm {
+class IterativeHeadingCorrectionAlgorithm : NavigationAlgorithm {
 
     override fun getInitialMove(): NavigationMove {
         TODO("Not yet implemented")

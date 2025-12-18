@@ -4,7 +4,6 @@ import com.scsa.abr.domain.model.NavigationDirection
 import com.scsa.abr.domain.model.NavigationMove
 import com.scsa.abr.domain.repository.BeaconRepository
 import com.scsa.abr.domain.repository.BleGattRepository
-import com.scsa.abr.domain.usecase.SendMotorCommandUseCase
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,7 +12,7 @@ import javax.inject.Singleton
 class FakeExecutor @Inject constructor(
     private val beaconRepository: BeaconRepository,
     private val bleGattRepository: BleGattRepository
-): NavigationExecutor {
+) : NavigationExecutor {
 
     override suspend fun executeMove(move: NavigationMove) {
         when (move.direction) {

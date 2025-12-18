@@ -8,6 +8,8 @@ import com.scsa.abr.domain.navigation.algorithm.NavigationAlgorithm
 import com.scsa.abr.domain.navigation.executor.NavigationExecutor
 import kotlinx.coroutines.delay
 
+private const val TAG = "NavigationStateMachine"
+
 class NavigationStateMachine(
     private val algorithm: NavigationAlgorithm,
     private val executor: NavigationExecutor,
@@ -15,7 +17,6 @@ class NavigationStateMachine(
     private val onIsArrivedChange: (Boolean) -> Unit,
     private val onLastMoveChange: (NavigationMove) -> Unit
 ) {
-    private val TAG = "NavigationStateMachine"
     private var state: NavigationState = NavigationState.IDLE
         set(value) {
             field = value
@@ -83,6 +84,7 @@ class NavigationStateMachine(
                         state = NavigationState.CALCULATING // go to next move
                     }
                 }
+
                 NavigationState.MOVING -> {
                     if (currentMove == null) {
                         Log.e(TAG, "currentMove is null")

@@ -29,7 +29,6 @@ import com.scsa.abr.ui.components.PermissionRationaleDialog
 import com.scsa.abr.ui.components.VehicleJoystickControl
 import com.scsa.abr.ui.state.BlePermissionState
 import com.scsa.abr.ui.viewmodel.VehicleControlViewModel
-import kotlin.text.forEach
 
 @Composable
 fun VehicleControlScreen(
@@ -101,6 +100,7 @@ fun VehicleControlScreen(
                             }
                         )
                     }
+
                     else -> Text("Bluetooth permissions required.")
                 }
             }

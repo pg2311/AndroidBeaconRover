@@ -2,33 +2,32 @@ package com.scsa.abr.domain.navigation.executor
 
 import android.util.Log
 import com.scsa.abr.domain.model.AbrProfile
-import com.scsa.abr.domain.model.Beacon
 import com.scsa.abr.domain.model.BeaconScanData
 import com.scsa.abr.domain.model.NavigationDirection
 import com.scsa.abr.domain.model.NavigationMove
 import com.scsa.abr.domain.repository.BeaconRepository
 import com.scsa.abr.domain.repository.BleGattRepository
-import com.scsa.abr.domain.usecase.SendMotorCommandUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToInt
 
+private const val TAG = "LowVoltageExecutor"
+
 @Singleton
 class LowVoltageExecutor @Inject constructor(
     private val beaconRepository: BeaconRepository,
     private val bleGattRepository: BleGattRepository
-): NavigationExecutor {
+) : NavigationExecutor {
 
-    private val TAG = "LowVoltageExecutor"
 
     override suspend fun executeMove(move: NavigationMove) {
         when (move.direction) {
             NavigationDirection.FORWARD -> moveForward(move.amount)
-            NavigationDirection.BACKWARD-> moveBackward(move.amount)
-            NavigationDirection.LEFT-> rotateLeft(move.amount)
-            NavigationDirection.RIGHT-> rotateRight(move.amount)
+            NavigationDirection.BACKWARD -> moveBackward(move.amount)
+            NavigationDirection.LEFT -> rotateLeft(move.amount)
+            NavigationDirection.RIGHT -> rotateRight(move.amount)
         }
     }
 
@@ -69,7 +68,7 @@ class LowVoltageExecutor @Inject constructor(
 
     private suspend fun moveBackward(amount: Int) {
         val backwardSpeedParam = 200
-        val backwardDistParam =	20 * amount
+        val backwardDistParam = 20 * amount
         sendMotorCommand("B:$backwardSpeedParam:$backwardDistParam")
     }
 

@@ -4,9 +4,9 @@ import com.scsa.abr.domain.model.NavigationAlgorithmType
 import com.scsa.abr.domain.model.NavigationDirection
 import com.scsa.abr.domain.model.NavigationMove
 import com.scsa.abr.domain.model.NavigationState
+import com.scsa.abr.domain.navigation.NavigationStateMachine
 import com.scsa.abr.domain.navigation.algorithm.NavigationAlgorithmFactory
 import com.scsa.abr.domain.navigation.executor.NavigationExecutor
-import com.scsa.abr.domain.navigation.NavigationStateMachine
 import com.scsa.abr.domain.repository.NavigationRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

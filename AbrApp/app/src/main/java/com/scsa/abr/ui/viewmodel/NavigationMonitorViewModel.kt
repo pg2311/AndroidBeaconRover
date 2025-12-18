@@ -15,12 +15,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val TAG = "NavigationMonitorViewModel"
+
 @HiltViewModel
 class NavigationMonitorViewModel @Inject constructor(
     private val navigationRepository: NavigationRepository
-): ViewModel() {
+) : ViewModel() {
 
-    private val TAG = "NavigationMonitorViewModel"
 
     private val _uiState = MutableStateFlow(NavigationMonitorUiState())
     val uiState: StateFlow<NavigationMonitorUiState> = _uiState.asStateFlow()
@@ -95,9 +96,11 @@ class NavigationMonitorViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 navigationRepository.stopNavigation()
-                _uiState.update { it.copy(
-                    errorMessage = null,
-                ) }
+                _uiState.update {
+                    it.copy(
+                        errorMessage = null,
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.update { it.copy(errorMessage = e.message) }
             }

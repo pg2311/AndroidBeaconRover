@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.scsa.abr.ui.viewmodel.NavigationMonitorViewModel
@@ -28,7 +27,9 @@ fun NavigationMonitorScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
@@ -49,7 +50,11 @@ fun NavigationMonitorScreen(
             onClick = { viewModel.onToggleNavigation() },
         ) {
             Text(
-                text = if (uiState.isNavigating) { "Stop" } else { "Start "}
+                text = if (uiState.isNavigating) {
+                    "Stop"
+                } else {
+                    "Start "
+                }
             )
         }
 

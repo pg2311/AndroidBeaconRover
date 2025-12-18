@@ -13,7 +13,7 @@ enum class NavigationAlgorithmType {
     ITERATIVE_HEADING_CORRECTION
 }
 
-data class NavigationMove (
+data class NavigationMove(
     val direction: NavigationDirection,
     val amount: Int
 ) {

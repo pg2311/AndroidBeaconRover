@@ -1,8 +1,5 @@
 package com.scsa.abr.domain.model
 
-import kotlin.math.roundToInt
-import kotlin.math.roundToLong
-
 data class Beacon(
     val macAddress: String,
     val name: String

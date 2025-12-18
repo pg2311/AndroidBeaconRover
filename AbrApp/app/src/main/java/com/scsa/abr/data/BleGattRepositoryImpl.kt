@@ -27,12 +27,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
 
+private const val TAG = "BleGattRepository"
+
 @Singleton
 class BleGattRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context
-): BleGattRepository {
+) : BleGattRepository {
 
-    private val TAG = "BleGattRepository"
 
     private val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
     private val bluetoothAdapter: BluetoothAdapter? = bluetoothManager?.adapter
@@ -45,8 +46,9 @@ class BleGattRepositoryImpl @Inject constructor(
     private val _receivedData = MutableSharedFlow<ByteArray>(replay = 0)
     override val receivedData: Flow<ByteArray> = _receivedData.asSharedFlow()
 
-    private val CLIENT_CHARACTERISTIC_CONFIG_UUID = UUID.fromString("ad3dc2eb-08ab-44c9-8c58-c2360c000907")
-    private val gattCallback = object: BluetoothGattCallback() {
+    private val CLIENT_CHARACTERISTIC_CONFIG_UUID =
+        UUID.fromString("ad3dc2eb-08ab-44c9-8c58-c2360c000907")
+    private val gattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
@@ -67,7 +69,7 @@ class BleGattRepositoryImpl @Inject constructor(
                 Log.i(TAG, "Services discovered: ${gatt.services?.size}")
                 gatt.services.forEach { service ->
                     Log.i(TAG, "Service: ${service.uuid}")
-                    service.characteristics.forEach {characteristic ->
+                    service.characteristics.forEach { characteristic ->
                         Log.i(TAG, "    Characteristic: ${characteristic.uuid}")
                     }
                 }
@@ -134,24 +136,25 @@ class BleGattRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun connect(deviceAddress: String): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            if (bluetoothAdapter == null) {
-                return@withContext Result.failure(Exception("Bluetooth not supported"))
+    override suspend fun connect(deviceAddress: String): Result<Unit> =
+        withContext(Dispatchers.IO) {
+            try {
+                if (bluetoothAdapter == null) {
+                    return@withContext Result.failure(Exception("Bluetooth not supported"))
+                }
+
+                _connectionState.value = BleConnectionState.CONNECTING
+
+                val device = bluetoothAdapter.getRemoteDevice(deviceAddress)
+                bluetoothGatt = device.connectGatt(context, false, gattCallback)
+
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Log.e(TAG, "Connection failed", e)
+                _connectionState.value = BleConnectionState.ERROR
+                Result.failure(e)
             }
-
-            _connectionState.value = BleConnectionState.CONNECTING
-
-            val device = bluetoothAdapter.getRemoteDevice(deviceAddress)
-            bluetoothGatt = device.connectGatt(context, false, gattCallback)
-
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "Connection failed", e)
-            _connectionState.value = BleConnectionState.ERROR
-            Result.failure(e)
         }
-    }
 
 
     override suspend fun disconnect() {
@@ -234,7 +237,8 @@ class BleGattRepositoryImpl @Inject constructor(
             }
 
             // Enable local notifications
-            val success = bluetoothGatt?.setCharacteristicNotification(characteristic, true) ?: false
+            val success =
+                bluetoothGatt?.setCharacteristicNotification(characteristic, true) ?: false
 
             if (!success) {
                 return Result.failure(Exception("Failed to enable notifications"))
