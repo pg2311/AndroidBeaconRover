@@ -22,7 +22,7 @@
 #define PWM_RESOLUTION 8      // 8-bit: 0-255
 
 // Speed settings
-#define MIN_SPEED     170     // Minimum speed that moves motors
+#define MIN_SPEED     175     // Minimum speed that moves motors
 #define MAX_SPEED     240
 #define DEFAULT_SPEED 190
 

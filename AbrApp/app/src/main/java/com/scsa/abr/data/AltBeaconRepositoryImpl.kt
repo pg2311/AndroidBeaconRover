@@ -96,7 +96,7 @@ class AltBeaconRepositoryImpl @Inject constructor(
         ),
         Beacon(
             macAddress = "C3:00:00:1C:65:0B",
-            name = "mBeaconRight"
+            name = "mBeaconLeft"
         ),
     )
 

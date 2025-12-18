@@ -172,12 +172,12 @@ void CommandInterface::processJoystick(int16_t x, int16_t y) {
 
   // Tank-style mixing
   // Convert joystick to differential drive
-  int16_t leftSpeed = y + x;
-  int16_t rightSpeed = y - x;
 
-  // Scale from -200..200 to -255..255
-  leftSpeed = map(leftSpeed, -200, 200, -255, 255);
-  rightSpeed = map(rightSpeed, -200, 200, -255, 255);
+  int16_t scaledX = map(x, -100, 100, -255, 255);
+  int16_t scaledY = map(y, -100, 100, -255, 255);
+
+  int16_t leftSpeed = scaledY + scaledX;
+  int16_t rightSpeed = scaledY - scaledX;
 
   // Constrain
   leftSpeed = constrain(leftSpeed, -255, 255);
