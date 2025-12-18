@@ -6,6 +6,7 @@ import com.scsa.abr.domain.model.NavigationMove
 import com.scsa.abr.domain.model.NavigationState
 import com.scsa.abr.domain.navigation.algorithm.NavigationAlgorithm
 import com.scsa.abr.domain.navigation.executor.NavigationExecutor
+import kotlinx.coroutines.delay
 
 class NavigationStateMachine(
     private val algorithm: NavigationAlgorithm,
@@ -77,6 +78,7 @@ class NavigationStateMachine(
                     } else {
                         Log.i(TAG, "Turn: $currentMove")
                         executor.executeMove(currentMove!!)
+                        delay(1200)
                         lastRotationDegree = currentMove!!.amount
                         state = NavigationState.CALCULATING // go to next move
                     }
@@ -88,6 +90,7 @@ class NavigationStateMachine(
                     } else {
                         Log.i(TAG, "Move: $currentMove")
                         executor.executeMove(currentMove!!)
+                        delay(1000)
                         lastRotationDegree = 0
                         state = NavigationState.GATHERING
                     }

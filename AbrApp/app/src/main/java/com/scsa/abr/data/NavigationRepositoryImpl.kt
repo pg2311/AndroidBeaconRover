@@ -27,7 +27,7 @@ class NavigationRepositoryImpl @Inject constructor(
     private val _isArrived = MutableStateFlow(false)
     override val isArrived = _isArrived.asStateFlow()
 
-    private val _lastMove = MutableStateFlow(NavigationMove(NavigationDirection.FORWARD, 100))
+    private val _lastMove = MutableStateFlow(NavigationMove(NavigationDirection.FORWARD, 4))
     override val lastMove: Flow<NavigationMove> = _lastMove.asStateFlow()
 
     override suspend fun startNavigation(navigationAlgorithmType: NavigationAlgorithmType) {

@@ -12,18 +12,19 @@
 #define ENA_PIN  6   // Left motor PWM (was ENB)
 #define IN1_PIN  4   // Left motor direction (was IN3)
 #define IN2_PIN  5   // Left motor direction (was IN4)
-#define IN3_PIN  3   // Right motor direction (was IN1)
-#define IN4_PIN  15  // Right motor direction (was IN2)
+#define IN3_PIN  15   // Right motor direction (was IN1)
+#define IN4_PIN  3  // Right motor direction (was IN2)
 #define ENB_PIN  2   // Right motor PWM (was ENA)
 
 // PWM settings
-#define PWM_FREQ       5000
+
+#define PWM_FREQ       17000
 #define PWM_RESOLUTION 8      // 8-bit: 0-255
 
 // Speed settings
-#define MIN_SPEED     190     // Minimum speed that moves motors
-#define MAX_SPEED     250
-#define DEFAULT_SPEED 200
+#define MIN_SPEED     170     // Minimum speed that moves motors
+#define MAX_SPEED     240
+#define DEFAULT_SPEED 190
 
 // Motor identifiers
 enum Motor {

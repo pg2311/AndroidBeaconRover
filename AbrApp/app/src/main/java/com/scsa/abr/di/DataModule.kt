@@ -5,6 +5,7 @@ import com.scsa.abr.data.BleGattRepositoryImpl
 import com.scsa.abr.data.BlePermissionRepositoryImpl
 import com.scsa.abr.data.NavigationRepositoryImpl
 import com.scsa.abr.domain.navigation.executor.FakeExecutor
+import com.scsa.abr.domain.navigation.executor.HighVoltageExecutor
 import com.scsa.abr.domain.navigation.executor.NavigationExecutor
 import com.scsa.abr.domain.navigation.executor.LowVoltageExecutor
 import com.scsa.abr.domain.repository.BeaconRepository
@@ -48,6 +49,6 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindNavigationExecutor(
-        impl: LowVoltageExecutor
+        impl: HighVoltageExecutor
     ): NavigationExecutor
 }

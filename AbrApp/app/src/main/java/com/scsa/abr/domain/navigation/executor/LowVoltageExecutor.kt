@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.roundToInt
 
 @Singleton
 class LowVoltageExecutor @Inject constructor(
@@ -37,48 +38,51 @@ class LowVoltageExecutor @Inject constructor(
 
     override suspend fun measureDistance(): Double {
         val startTime = System.currentTimeMillis()
+        var count = 0
 
         var resultList: List<BeaconScanData>? = null
         while (resultList == null || resultList.isEmpty()) {
+            count += 1
             resultList = getResultList(startTime)
-            Log.i(TAG, "resultListSize: ${resultList?.size}")
+            Log.i(TAG, "resultListSize(try$count): ${resultList?.size}")
         }
 
         return resultList.map { it.distance }.average()
     }
 
     private suspend fun getResultList(startTime: Long): List<BeaconScanData>? {
-        Log.i(TAG, "getResultList start at: $startTime")
         return withTimeoutOrNull(2500) {
             var list: List<BeaconScanData>
             do {
                 delay(100)
                 list = beaconRepository.getBeaconHistoryAfter(startTime)
-            } while (list.size <= 3)
-            list // Return the list when size > 10
+            } while (list.size <= 8)
+            list
         }
     }
 
     private suspend fun moveForward(amount: Int) {
         val forwardSpeedParam = 200
-        val forwardDistParam = 10 * amount
+        val forwardDistParam = 20 * amount
         sendMotorCommand("F:$forwardSpeedParam:$forwardDistParam")
     }
 
     private suspend fun moveBackward(amount: Int) {
         val backwardSpeedParam = 200
-        val backwardDistParam = 10 * amount
+        val backwardDistParam =	20 * amount
         sendMotorCommand("B:$backwardSpeedParam:$backwardDistParam")
     }
 
     private suspend fun rotateLeft(amount: Int) {
         val leftSpeedParam = 200
-        sendMotorCommand("G:$leftSpeedParam:$amount")
+        val leftTurnParam = 1000
+        sendMotorCommand("G:$leftSpeedParam:${(amount * 0.01 * leftTurnParam).roundToInt()}")
     }
 
     private suspend fun rotateRight(amount: Int) {
         val rightSpeedParam = 200
-        sendMotorCommand("H:$rightSpeedParam:$amount")
+        val rightTurnParam = 1000
+        sendMotorCommand("H:$rightSpeedParam:${(amount * 0.01 * rightTurnParam).roundToInt()}")
     }
 
     private suspend fun sendMotorCommand(command: String) {

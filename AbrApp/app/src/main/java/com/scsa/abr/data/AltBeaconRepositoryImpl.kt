@@ -45,7 +45,7 @@ class AltBeaconRepositoryImpl @Inject constructor(
     }
 
     private fun setupBeaconManager() {
-        ArmaRssiFilter.setDEFAULT_ARMA_SPEED(0.8)
+        ArmaRssiFilter.setDEFAULT_ARMA_SPEED(0.6)
         BeaconManager.setRssiFilterImplClass(ArmaRssiFilter::class.java)
         beaconManager.beaconParsers.add(
             BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
@@ -84,12 +84,20 @@ class AltBeaconRepositoryImpl @Inject constructor(
     override fun getBeacons(): List<Beacon> = listOf(
         Beacon(
             macAddress = "F0:F8:F2:04:4F:81",
-            name = "pBeacon"
+            name = "pBeaconRight"
         ),
         Beacon(
             macAddress = "C3:00:00:1C:65:0A",
-            name = "mBeacon"
-        )
+            name = "mBeaconRight"
+        ),
+        Beacon(
+            macAddress = "00:81:F9:E2:6A:0A",
+            name = "pBeaconLeft"
+        ),
+        Beacon(
+            macAddress = "C3:00:00:1C:65:0B",
+            name = "mBeaconRight"
+        ),
     )
 
     override fun getBeaconHistoryAfter(startTime: Long): List<BeaconScanData> {
@@ -143,9 +151,6 @@ class AltBeaconRepositoryImpl @Inject constructor(
             macAddress = macAddress,
             data = history.getHistory()
         )
-
-        Log.i(TAG, "history size: ${history.getHistory().size}")
-        Log.i(TAG, "last data: $newData")
 
         val currentResults = _scanResults.value.toMutableMap()
         currentResults[macAddress] = scanResult
