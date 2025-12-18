@@ -20,8 +20,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val TAG = "VehicleControlViewModel"
+private const val COMMAND_THROTTLE_MS = 100L
+
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class VehicleControlViewModel @Inject constructor(
     private val beaconRepository: BeaconRepository,
     private val blePermissionsRepository: BlePermissionRepository,
     private val bleGattRepository: BleGattRepository,
@@ -29,14 +32,11 @@ class MainViewModel @Inject constructor(
     private val sendMotorCommandUseCase: SendMotorCommandUseCase
 ) : ViewModel() {
 
-    private val TAG = "MainViewModel"
 
     private val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    // Throttling for joystick commands
     private var lastCommandTime = 0L
-    private val COMMAND_THROTTLE_MS = 50L // Send max 20 commands per second
 
     init {
         observeGattConnection()
@@ -74,28 +74,19 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             sendMotorCommandUseCase(command)
                 .onSuccess { Log.i(TAG, "Command sent: $command") }
-                .onFailure { e -> Log.e(TAG, "Failed to send command: $command", e) }
+                .onFailure { e ->
+                    Log.e(TAG, "Failed to send command: $command", e)
+                    if (command == "S") {
+                        sendMotorCommandUseCase(command)
+                            .onSuccess { Log.i(TAG, "Stop Retry Success") }
+                            .onFailure { e -> Log.e(TAG, "Stop Retry Failed: $command", e) }
+                    }
+                }
         }
     }
 
     fun startStatusNotifications() {
         startStatusNotificationsUseCase()
-    }
-
-    fun moveForward(speed: Int = 200) {
-        sendMotorCommand("F:$speed")
-    }
-
-    fun moveBackward(speed: Int = 200) {
-        sendMotorCommand("B:$speed")
-    }
-
-    fun turnLeft(speed: Int = 200) {
-        sendMotorCommand("L:$speed")
-    }
-
-    fun turnRight(speed: Int = 200) {
-        sendMotorCommand("R:$speed")
     }
 
     fun stop() {
@@ -105,7 +96,6 @@ class MainViewModel @Inject constructor(
     fun sendJoystickCommand(x: Int, y: Int) {
         val currentTime = System.currentTimeMillis()
 
-        // Throttle: only send if enough time has passed since last command
         if (currentTime - lastCommandTime < COMMAND_THROTTLE_MS) {
             return
         }

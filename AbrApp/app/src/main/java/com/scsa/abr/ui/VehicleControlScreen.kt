@@ -26,15 +26,14 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.scsa.abr.domain.model.BleConnectionState
 import com.scsa.abr.ui.components.PermissionRationaleDialog
-import com.scsa.abr.ui.components.VehicleButtonControl
 import com.scsa.abr.ui.components.VehicleJoystickControl
 import com.scsa.abr.ui.state.BlePermissionState
-import com.scsa.abr.ui.viewmodel.MainViewModel
+import com.scsa.abr.ui.viewmodel.VehicleControlViewModel
 import kotlin.text.forEach
 
 @Composable
 fun VehicleControlScreen(
-    viewModel: MainViewModel,
+    viewModel: VehicleControlViewModel,
     modifier: Modifier = Modifier,
     onRequestPermissions: () -> Unit
 ) {
@@ -112,8 +111,6 @@ fun VehicleControlScreen(
 
                 if (useJoystick) {
                     VehicleJoystickControl(viewModel)
-                } else {
-                    VehicleButtonControl(viewModel)
                 }
             } else {
                 Text(

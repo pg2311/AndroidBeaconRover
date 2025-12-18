@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.scsa.abr.ui.MainScreen
-import com.scsa.abr.ui.viewmodel.MainViewModel
+import com.scsa.abr.ui.viewmodel.VehicleControlViewModel
 import com.scsa.abr.ui.theme.ABRTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     // TODO: ?
-    private val viewModel: MainViewModel by viewModels<MainViewModel>()
+    private val viewModel: VehicleControlViewModel by viewModels<VehicleControlViewModel>()
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()

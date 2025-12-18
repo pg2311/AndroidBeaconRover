@@ -9,14 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.scsa.abr.ui.viewmodel.MainViewModel
+import com.scsa.abr.ui.viewmodel.VehicleControlViewModel
 
 /**
  * Vehicle control using virtual joystick.
  * Provides smooth analog control of the ESP32 vehicle.
  */
 @Composable
-fun VehicleJoystickControl(viewModel: MainViewModel) {
+fun VehicleJoystickControl(viewModel: VehicleControlViewModel) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -41,7 +41,6 @@ fun VehicleJoystickControl(viewModel: MainViewModel) {
                 viewModel.sendJoystickCommand(xCmd, yCmd)
             },
             onRelease = {
-                // Stop the vehicle when joystick is released
                 viewModel.stop()
             }
         )
