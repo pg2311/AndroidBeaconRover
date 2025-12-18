@@ -32,7 +32,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.scsa.abr.domain.model.Beacon
 import com.scsa.abr.domain.model.BeaconScanResult
-import com.scsa.abr.ui.state.BeaconUiState
+import com.scsa.abr.ui.viewmodel.BeaconViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -132,9 +132,11 @@ private fun BeaconCard(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
 
             // Beacon name and MAC address
             Text(
@@ -152,44 +154,27 @@ private fun BeaconCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             if (scanResult != null) {
+                val dataSize = scanResult.data.size
+                val startIndex = if (dataSize < 10) {
+                    0
+                } else {
+                    dataSize - 10
+                }
+
                 Text(
                     text = "RSSI History:",
                     style = MaterialTheme.typography.labelMedium
                 )
+                Text(text= "${scanResult.data.size}")
                 Text(
-                    text = scanResult.distanceHistory.joinToString(", ") { "$it m" },
+                    text = scanResult.data
+                        .subList(startIndex, dataSize)
+                        .joinToString("\n") { "$it" },
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 8.dp)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = scanResult.rssiHistory.joinToString(", ") { "$it dBm" },
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Intervals:",
-                    style = MaterialTheme.typography.labelMedium
-                )
-                Text(
-                    text = scanResult.intervalHistory.joinToString(", ") { "${it}ms" },
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Last seen timestamp
-                Text(
-                    text = "Last seen: ${formatTimestamp(scanResult.lastSeenTimestamp)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             } else {
                 // Beacon not detected
                 Text(

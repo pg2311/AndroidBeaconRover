@@ -1,8 +1,10 @@
 package com.scsa.abr.data
 
 import android.content.Context
+import android.util.Log
 import com.scsa.abr.domain.repository.BeaconRepository
 import com.scsa.abr.domain.model.Beacon
+import com.scsa.abr.domain.model.BeaconScanData
 import com.scsa.abr.domain.model.BeaconScanResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +45,7 @@ class AltBeaconRepositoryImpl @Inject constructor(
     }
 
     private fun setupBeaconManager() {
-        ArmaRssiFilter.setDEFAULT_ARMA_SPEED(0.8)
+        ArmaRssiFilter.setDEFAULT_ARMA_SPEED(0.6)
         BeaconManager.setRssiFilterImplClass(ArmaRssiFilter::class.java)
         beaconManager.beaconParsers.add(
             BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24")
@@ -82,14 +84,35 @@ class AltBeaconRepositoryImpl @Inject constructor(
     override fun getBeacons(): List<Beacon> = listOf(
         Beacon(
             macAddress = "F0:F8:F2:04:4F:81",
-            name = "pBeacon"
+            name = "pBeaconRight"
         ),
         Beacon(
             macAddress = "C3:00:00:1C:65:0A",
-            name = "mBeacon"
-        )
+            name = "mBeaconRight"
+        ),
+        Beacon(
+            macAddress = "00:81:F9:E2:6A:0A",
+            name = "pBeaconLeft"
+        ),
+        Beacon(
+            macAddress = "C3:00:00:1C:65:0B",
+            name = "mBeaconRight"
+        ),
     )
 
+    override fun getBeaconHistoryAfter(startTime: Long): List<BeaconScanData> {
+        val currentResults = _scanResults.value.toMutableMap()
+        val ret = mutableListOf<BeaconScanData>()
+
+        currentResults.values.forEach { beaconScanResult ->
+            val temp = beaconScanResult.data.filter { beaconScanData ->
+                beaconScanData.timestamp >= startTime
+            }
+            ret.addAll(temp)
+        }
+
+        return ret;
+    }
 
     override fun didRangeBeaconsInRegion(
         beacons: Collection<org.altbeacon.beacon.Beacon?>?,
@@ -116,25 +139,17 @@ class AltBeaconRepositoryImpl @Inject constructor(
     private fun updateBeaconReading(macAddress: String, rssi: Int, distance: Double) {
         val currentTime = System.currentTimeMillis()
         val history = beaconHistory.getOrPut(macAddress) { BeaconHistory() }
-        val interval = if (history.lastTimestamp > 0) {
-            currentTime - history.lastTimestamp
-        } else {
-            0
-        }
 
-        history.addRssi(rssi)
-        history.addDistance(distance)
-        history.lastTimestamp = currentTime
-        if (interval > 0) {
-            history.addInterval(interval)
-        }
+        val newData = BeaconScanData(
+            rssi = rssi,
+            timestamp = currentTime,
+            distance = distance
+        )
+        history.addHistory(newData)
 
         val scanResult = BeaconScanResult(
             macAddress = macAddress,
-            rssiHistory = history.getRssiHistory(),
-            intervalHistory = history.getIntervalHistory(),
-            distanceHistory = history.getDistanceHistory(),
-            lastSeenTimestamp = currentTime
+            data = history.getHistory()
         )
 
         val currentResults = _scanResults.value.toMutableMap()
@@ -143,42 +158,18 @@ class AltBeaconRepositoryImpl @Inject constructor(
     }
 
     private class BeaconHistory {
-        private val rssiQueue = ArrayDeque<Int>(10)
-        private val intervalQueue = ArrayDeque<Long>(10)
-        private val distanceQueue = ArrayDeque<Double>(10)
-        var lastTimestamp: Long = 0L
+        private val historySize = 100
+        private val historyData = ArrayDeque<BeaconScanData>(historySize)
 
         @Synchronized
-        fun addRssi(rssi: Int) {
-            if (rssiQueue.size >= 10) {
-                rssiQueue.removeFirst()
+        fun addHistory(beaconScanData: BeaconScanData) {
+            if (historyData.size >= historySize) {
+                historyData.removeFirst()
             }
-            rssiQueue.addLast(rssi)
+            historyData.addLast(beaconScanData)
         }
 
         @Synchronized
-        fun addInterval(interval: Long) {
-            if (intervalQueue.size >= 10) {
-                intervalQueue.removeFirst()
-            }
-            intervalQueue.addLast(interval)
-        }
-
-        @Synchronized
-        fun addDistance(distance: Double) {
-            if (distanceQueue.size >= 10) {
-                distanceQueue.removeFirst()
-            }
-            distanceQueue.addLast(distance)
-        }
-
-        @Synchronized
-        fun getRssiHistory(): List<Int> = rssiQueue.toList()
-
-        @Synchronized
-        fun getIntervalHistory(): List<Long> = intervalQueue.toList()
-
-        @Synchronized
-        fun getDistanceHistory(): List<Double> = distanceQueue.toList()
+        fun getHistory() = historyData.toList()
     }
 }

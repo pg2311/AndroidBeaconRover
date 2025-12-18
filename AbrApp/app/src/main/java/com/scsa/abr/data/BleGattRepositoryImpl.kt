@@ -108,9 +108,7 @@ class BleGattRepositoryImpl @Inject constructor(
             characteristic: BluetoothGattCharacteristic,
             status: Int
         ) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.i(TAG, "Characteristic write successful")
-            } else {
+            if (status != BluetoothGatt.GATT_SUCCESS) {
                 Log.w(TAG, "Characteristic write failed: $status")
             }
         }

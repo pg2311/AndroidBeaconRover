@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.scsa.abr.ui.MainScreen
-import com.scsa.abr.ui.MainViewModel
+import com.scsa.abr.ui.viewmodel.MainViewModel
 import com.scsa.abr.ui.theme.ABRTheme
 import dagger.hilt.android.AndroidEntryPoint
 

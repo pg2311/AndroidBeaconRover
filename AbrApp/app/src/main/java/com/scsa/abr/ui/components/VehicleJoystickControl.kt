@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.scsa.abr.ui.MainViewModel
+import com.scsa.abr.ui.viewmodel.MainViewModel
 
 /**
  * Vehicle control using virtual joystick.
